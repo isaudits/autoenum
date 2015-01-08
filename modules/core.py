@@ -110,34 +110,41 @@ def write_html_index(output_folder):
     '''
     if os.path.exists(os.path.join(output_folder,"index.html")):
         os.remove(os.path.join(output_folder,"index.html"))
-    html_out = "<h1>Enumeration results</h1>\n"
+    html_title = "Autoenum scan output"
+    html_body = "<h1>"+html_title+"</h1>\n"
+    html_body += "<h2>Enumeration results</h2>\n"
     
     try:
         for fname in os.listdir(output_folder):
             if os.path.isfile(os.path.join(output_folder,fname)):
-                html_out += " <a href='" + fname + "'>" + fname + "</a><br>\n"
+                html_body += " <a href='" + fname + "'>" + fname + "</a><br>\n"
     except:
         pass
     
-    html_out += "<h1>Service scan results</h1>\n"
+    html_body += "<br>\n"
+    html_body += "<h2>Service scan results</h2>\n"
     
     try:
         directory = "services/"
         for fname in os.listdir(os.path.join(output_folder,directory)):
-            html_out += " <a href='" + directory + fname + "'>" + fname + "</a><br>\n"
+            html_body += " <a href='" + directory + fname + "'>" + fname + "</a><br>\n"
     except:
         pass
     
-    html_out += "<br>\n"
-    html_out += "<h1>Target Listings</h1>\n"
+    html_body += "<br>\n"
+    html_body += "<h2>Target Listings</h2>\n"
     
     try:
         directory = "target_lists/"
         for fname in os.listdir(os.path.join(output_folder,directory)):
-            html_out += " <a href='" + directory + fname + "'>" + fname + "</a><br>\n"
+            html_body += " <a href='" + directory + fname + "'>" + fname + "</a><br>\n"
     except:
         pass 
     
+    input_file = open(os.path.join("templates","index.html"))
+    html_out = input_file.read()
+    html_out = html_out.replace("<!--title-->",html_title)
+    html_out = html_out.replace("<!--body-->",html_body)
     write_outfile(output_folder, "index.html", html_out)
 
 if __name__ == '__main__':

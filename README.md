@@ -42,7 +42,6 @@ Script tested on Kali Linux as well as OSX and should function on UNIX-based sys
 ##Todo
 
 - Move additional hard-coded stuff to config file
-- Prettify output index page with css / images
 - Additional external service scan utilities like we have with Nikto
 - Sessions
     - Re-use of live host and enum scans for multiple groups / verbosities of script scans

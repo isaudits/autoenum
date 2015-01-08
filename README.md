@@ -22,6 +22,7 @@ Traditional Nmap target specifications using commas (e.g. 192.168.0.1-100,200,25
 due to the way the python-libnmap parses targets with commas as tuples (thus separate hosts delimited by commas)
 
 Script tested on Kali Linux as well as OSX and should function on UNIX-based systems with required dependencies.
+
 ---------------------------------------------------------------------------------------------------
 ##Dependencies
 
@@ -61,6 +62,7 @@ IS Audits & Consulting, LLC - <http://www.isaudits.com/>
 TJS Deemer Dana LLP - <http://www.tjsdd.com/>
 
 Concept based upon functionality observed in the LAN portion of the Kali Discover script by leebaird: <https://github.com/leebaird/discover/>
+
 ---------------------------------------------------------------------------------------------------
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.

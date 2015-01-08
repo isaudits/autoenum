@@ -96,7 +96,7 @@ def write_target_list(hosts, output_dir):
     
     '''
     output_text = ""
-    filename = "all live hosts.txt"
+    filename = "all_live_hosts.txt"
     for host in hosts:
         output_text += host + "\n"
 
@@ -119,10 +119,7 @@ def write_html_index(output_folder):
     except:
         pass
     
-    #html_out += "<h2><a href=nmap_tcp_enum_scan.html>TCP enumeration scan results</a></h2>\n"
-    #html_out += "<h2><a href=nmap_udp_enum_scan.html>UDP enumeration scan results</a></h2>\n"
-    
-    html_out += "<h1>Service scan results:</h1>\n"
+    html_out += "<h1>Service scan results</h1>\n"
     
     try:
         directory = "services/"
@@ -132,7 +129,7 @@ def write_html_index(output_folder):
         pass
     
     html_out += "<br>\n"
-    html_out += "<h1>Target Listings:</h1>\n"
+    html_out += "<h1>Target Listings</h1>\n"
     
     try:
         directory = "target_lists/"

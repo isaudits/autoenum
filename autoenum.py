@@ -24,8 +24,7 @@ from modules.nmap import *
 #------------------------------------------------------------------------------
 # Configure Argparse to handle command line arguments
 #------------------------------------------------------------------------------
-desc = """LAN enumeration and script scanning automation script
-            (we need a better description)."""
+desc = "Network enumeration and script scanning automation script"
 
 parser = argparse.ArgumentParser(description=desc)
 parser.add_argument('target', action='store',
@@ -82,7 +81,6 @@ config = ConfigParser.SafeConfigParser()
 config.read(config_file)
 
 timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H.%M.%S")
-print timestamp
 
 #------------------------------------------------------------------------------
 # Live host detection scan
@@ -136,7 +134,7 @@ logging.debug(ports)
 logging.debug(webhosts)
 
 write_target_lists_by_port(ports, os.path.join(output_dir,"target_lists"))
-write_outfile(os.path.join(output_dir,"target_lists"), "all http-https hosts.txt", webhosts)
+write_outfile(os.path.join(output_dir,"target_lists"), "all_webhosts.txt", webhosts)
 
 
 #------------------------------------------------------------------------------
@@ -210,7 +208,6 @@ if webhosts:
             output = p2.communicate()[0] #run our commands
         except:
             print "Nikto could not be executed - ensure it is installed and in your path"
-
 
 
 #------------------------------------------------------------------------------

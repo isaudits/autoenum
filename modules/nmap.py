@@ -28,8 +28,6 @@ def run_nmap_scan(scan_targets, scan_options):
         scan_options = scan_options.replace("-sn", "")
         scan_options = scan_options.replace("-sV", "")
         scan_options = scan_options.replace("-O", "")
- 
-        
     
     nmap_proc = NmapProcess(targets=scan_targets, options=scan_options)
     print "Running scan command:\n"+nmap_proc.command

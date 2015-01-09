@@ -7,7 +7,7 @@ import subprocess
 
 # exit routine
 def exit_program():
-    print "\n\nAnd he walked on down the hall...\n"
+    print "\n\nQuitting...\n"
     sys.exit()
     
 # cleanup old or stale files

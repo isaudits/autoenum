@@ -201,11 +201,16 @@ if webhosts:
     if "n" in run_nikto_scan or "N" in run_nikto_scan:
         pass
     else:
+        path = os.path.join(output_dir, "services")
+        if not os.path.exists(path):
+            os.makedirs(path)
         try:
             p1 = subprocess.Popen(['echo', webhosts], stdout=subprocess.PIPE) #Set up the echo command and direct the output to a pipe
-            p2 = subprocess.Popen(['nikto','-h', '-', '-o' , os.path.join(output_dir, "services", "http-nikto_"+timestamp+".html")], stdin=p1.stdout) #send p1's output to p2
+            p2 = subprocess.Popen(['nikto','-h', '-', '-o' , os.path.join(path, "http-nikto_"+timestamp+".html")], stdin=p1.stdout) #send p1's output to p2
             p1.stdout.close() #make sure we close the output so p2 doesn't hang waiting for more input
             output = p2.communicate()[0] #run our commands
+        except KeyboardInterrupt:
+            print "Keyboard Interrupt - Nikto Scan Operation Killed"
         except:
             print "Nikto could not be executed - ensure it is installed and in your path"
 
@@ -231,4 +236,3 @@ if is_output_dir_clean == False:
 
 #This is the end...beautiful friend...the end...
 print "\nOutput files located at " + output_dir + " with timestamp " + timestamp
-exit_program()

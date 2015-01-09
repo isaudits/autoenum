@@ -15,6 +15,8 @@ def run_nmap_scan(scan_targets, scan_options):
     Returns NmapProcess object for further use
     
     TODO - catch keyboard interrupts and kill tasks so we can exit gracefully!
+            nmap_proc.stop does not appear to fully kill threads in script scans
+            so program will continue to execute but leaves an orphaned nmap process
     '''
     status_update_interval = 5
     
@@ -34,25 +36,28 @@ def run_nmap_scan(scan_targets, scan_options):
     nmap_proc.run_background()
     
     while nmap_proc.is_running():
-        
-        time.sleep(status_update_interval)
-        
-        if nmap_proc.progress > 0:
+        try:
+            time.sleep(status_update_interval)
             
-            #Nmap only updates ETC periodically and will sometimes return a result that is behind current system time
-            etctime = datetime.datetime.fromtimestamp(int(nmap_proc.etc))
-            systime = datetime.datetime.now().replace(microsecond=0)
-            if etctime < systime:
-                etctime = systime
-            timeleft = etctime - systime
-            print("{0} Timing: About {1}% done; ETC: {2} ({3} remaining)".format(nmap_proc.current_task.name, nmap_proc.progress, etctime, timeleft))
-        
+            if nmap_proc.progress > 0:
+                
+                #Nmap only updates ETC periodically and will sometimes return a result that is behind current system time
+                etctime = datetime.datetime.fromtimestamp(int(nmap_proc.etc))
+                systime = datetime.datetime.now().replace(microsecond=0)
+                if etctime < systime:
+                    etctime = systime
+                timeleft = etctime - systime
+                print("{0} Timing: About {1}% done; ETC: {2} ({3} remaining)".format(nmap_proc.current_task.name, nmap_proc.progress, etctime, timeleft))
+        except KeyboardInterrupt:
+            print "Keyboard Interrupt - Killing Current Nmap Scan!"
+            nmap_proc.stop()
         
     if nmap_proc.rc == 0:
         print nmap_proc.summary + "\n"
-        return nmap_proc
     else:
-        print nmap_proc.stderr
+        print nmap_proc.stderr + "\n"
+    
+    return nmap_proc
 
 def nmap_out_to_html(scan_object, output_dir, filename):
     '''

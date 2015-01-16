@@ -4,6 +4,7 @@ import sys
 import os
 import shutil
 import subprocess
+import csv
 
 # exit routine
 def exit_program():
@@ -112,6 +113,18 @@ def write_html_index(output_folder):
         os.remove(os.path.join(output_folder,"index.html"))
     html_title = "Autoenum scan output"
     html_body = "<h1>"+html_title+"</h1>\n"
+    
+    html_body += "<h2>Scan history</h2>\n"
+    html_body += "<table>\n"
+    
+    history_file = csv.reader(open(os.path.join(output_folder, "info", "scan_history.csv"), 'rb'))
+    for row in history_file:
+        html_body += "    <tr>\n"
+        for cell in row:
+            html_body += "        <td>" + cell + "</td>\n"
+        html_body += "    </tr>\n"
+    html_body += "</table>\n"
+    
     html_body += "<h2>Enumeration results</h2>\n"
     
     try:

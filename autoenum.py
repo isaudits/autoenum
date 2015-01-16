@@ -65,6 +65,11 @@ logging.debug('Debug mode enabled')
 #Wait a sec for debug messages to display
 time.sleep(1)
 
+#Check target input
+if "," in target:
+    print "Commas found in input target list and will not parse correctly in libnmap"
+    exit_program()
+
 #Check root
 if os.getuid()!=0:
     print ("Script not running as root...this breaks stuff with nmap...")
@@ -82,6 +87,9 @@ config.read(config_file)
 
 timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H.%M.%S")
 
+# Log scan info to history file
+output_text = timestamp + "," + target + "," + config_file + "\n"
+write_outfile(os.path.join(output_dir, "info"), "scan_history.csv", output_text)
 #------------------------------------------------------------------------------
 # Live host detection scan
 

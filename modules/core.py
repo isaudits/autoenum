@@ -115,11 +115,12 @@ def write_html_index(output_folder):
     html_body += "<h2>Enumeration results</h2>\n"
     
     try:
-        for fname in os.listdir(output_folder):
-            if os.path.isfile(os.path.join(output_folder,fname)):
-                html_body += " <a href='" + fname + "'>" + fname + "</a><br>\n"
+        directory = "enum_scans/"
+        for fname in os.listdir(os.path.join(output_folder,directory)):
+            html_body += " <a href='" + directory + fname + "'>" + fname + "</a><br>\n"
     except:
         pass
+    
     
     html_body += "<br>\n"
     html_body += "<h2>Service scan results</h2>\n"

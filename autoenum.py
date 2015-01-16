@@ -94,7 +94,7 @@ else:
     live_host_scan = run_nmap_scan(target, scan_options)
     
     outfile_name = "nmap_live_host_scan_"+timestamp
-    nmap_out_to_html(live_host_scan, output_dir, outfile_name+".html")
+    nmap_out_to_html(live_host_scan, os.path.join(output_dir, "enum_scans"), outfile_name+".html")
     write_outfile(os.path.join(output_dir,"nmap_xml"), outfile_name+".xml", live_host_scan.stdout)
     
     live_hosts = nmap_parse_live_hosts(live_host_scan.stdout)
@@ -112,7 +112,7 @@ scan_options = config.get("scan_config", "tcp_enum")
 tcp_enum_scan = run_nmap_scan(target, scan_options)
 scan_output = tcp_enum_scan.stdout
 outfile_name = "nmap_tcp_enum_scan_"+timestamp
-nmap_out_to_html(tcp_enum_scan, output_dir, outfile_name+".html")
+nmap_out_to_html(tcp_enum_scan, os.path.join(output_dir, "enum_scans"), outfile_name+".html")
 write_outfile(os.path.join(output_dir,"nmap_xml"), outfile_name+".xml", tcp_enum_scan.stdout)
 
 hosts = nmap_parse_ports_by_host(scan_output)
@@ -123,7 +123,7 @@ scan_options = config.get("scan_config", "udp_enum")
 udp_enum_scan = run_nmap_scan(target, scan_options)
 scan_output = udp_enum_scan.stdout
 outfile_name = "nmap_udp_enum_scan_"+timestamp
-nmap_out_to_html(udp_enum_scan, output_dir, outfile_name+".html")
+nmap_out_to_html(udp_enum_scan, os.path.join(output_dir, "enum_scans"), outfile_name+".html")
 write_outfile(os.path.join(output_dir,"nmap_xml"), outfile_name+".xml", udp_enum_scan.stdout)
 
 hosts.update(nmap_parse_ports_by_host(scan_output))

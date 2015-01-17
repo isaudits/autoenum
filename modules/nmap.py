@@ -1,4 +1,14 @@
 #!/usr/bin/env python
+'''
+@author: Matthew C. Jones, CPA, CISA, OSCP
+IS Audits & Consulting, LLC
+TJS Deemer Dana LLP
+
+Nmap scanning functions for autoenum
+
+See README.md for licensing information and credits
+
+'''
 
 import time
 import datetime

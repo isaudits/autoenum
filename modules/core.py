@@ -1,5 +1,14 @@
 #!/usr/bin/env python
+'''
+@author: Matthew C. Jones, CPA, CISA, OSCP
+IS Audits & Consulting, LLC
+TJS Deemer Dana LLP
 
+Core functions for autoenum
+
+See README.md for licensing information and credits
+
+'''
 import sys
 import os
 import shutil

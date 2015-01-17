@@ -17,7 +17,8 @@ import datetime
 import subprocess
 
 from modules.core import *
-from modules.nmap import * 
+from modules.nmap import *
+from modules.output import *
 
 
 

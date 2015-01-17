@@ -88,8 +88,14 @@ config.read(config_file)
 timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H.%M.%S")
 
 # Log scan info to history file
-output_text = timestamp + "," + target + "," + config_file + "\n"
+if os.path.exists(os.path.join(output_dir, "info", "scan_history.csv")):
+    output_text = ""
+else:
+    output_text = "Timestamp,Scan Target,Config\n"
+    
+output_text += timestamp + "," + target + "," + config_file + "\n"
 write_outfile(os.path.join(output_dir, "info"), "scan_history.csv", output_text)
+
 #------------------------------------------------------------------------------
 # Live host detection scan
 

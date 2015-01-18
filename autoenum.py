@@ -21,7 +21,6 @@ from modules.nmap import *
 from modules.output import *
 
 
-
 #------------------------------------------------------------------------------
 # Configure Argparse to handle command line arguments
 #------------------------------------------------------------------------------
@@ -58,7 +57,23 @@ logging.basicConfig(level=args.loglevel)
 logging.info('verbose mode enabled')
 logging.debug('Debug mode enabled')
 
+#------------------------------------------------------------------------------
+# Get general config file parameters
+#------------------------------------------------------------------------------
+check_config(config_file)
+config = ConfigParser.SafeConfigParser()
+config.read(config_file)
 
+try:
+    output_dir_info = os.path.join(output_dir, config.get("main_config", "output_dir_info"))
+    output_dir_nmap_xml = os.path.join(output_dir, config.get("main_config", "output_dir_nmap_xml"))
+    output_dir_nmap_enum = os.path.join(output_dir, config.get("main_config", "output_dir_nmap_enum"))
+    output_dir_service_info = os.path.join(output_dir, config.get("main_config", "output_dir_service_info"))
+    output_dir_target_lists = os.path.join(output_dir, config.get("main_config", "output_dir_target_lists"))
+except:
+    print "Missing required config file sections. Check running config file against provided example\n"
+    exit_program()
+    
 #------------------------------------------------------------------------------
 # Main Program
 #------------------------------------------------------------------------------
@@ -82,20 +97,16 @@ if os.getuid()!=0:
 
 is_output_dir_clean = cleanup_routine(output_dir)
 
-check_config(config_file)
-config = ConfigParser.SafeConfigParser()
-config.read(config_file)
-
 timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H.%M.%S")
 
 # Log scan info to history file
-if os.path.exists(os.path.join(output_dir, "info", "scan_history.csv")):
+if os.path.exists(os.path.join(output_dir_info, "scan_history.csv")):
     output_text = ""
 else:
     output_text = "Timestamp,Scan Target,Config\n"
     
 output_text += timestamp + "," + target + "," + config_file + "\n"
-write_outfile(os.path.join(output_dir, "info"), "scan_history.csv", output_text)
+write_outfile(output_dir_info, "scan_history.csv", output_text)
 
 #------------------------------------------------------------------------------
 # Live host detection scan
@@ -109,8 +120,8 @@ else:
     live_host_scan = run_nmap_scan(target, scan_options)
     
     outfile_name = "nmap_live_host_scan_"+timestamp
-    nmap_out_to_html(live_host_scan, os.path.join(output_dir, "enum_scans"), outfile_name+".html")
-    write_outfile(os.path.join(output_dir,"nmap_xml"), outfile_name+".xml", live_host_scan.stdout)
+    nmap_out_to_html(live_host_scan, output_dir_nmap_enum, outfile_name+".html")
+    write_outfile(output_dir_nmap_xml, outfile_name+".xml", live_host_scan.stdout)
     
     live_hosts = nmap_parse_live_hosts(live_host_scan.stdout)
     logging.debug(live_hosts)
@@ -127,8 +138,8 @@ scan_options = config.get("scan_config", "tcp_enum")
 tcp_enum_scan = run_nmap_scan(target, scan_options)
 scan_output = tcp_enum_scan.stdout
 outfile_name = "nmap_tcp_enum_scan_"+timestamp
-nmap_out_to_html(tcp_enum_scan, os.path.join(output_dir, "enum_scans"), outfile_name+".html")
-write_outfile(os.path.join(output_dir,"nmap_xml"), outfile_name+".xml", tcp_enum_scan.stdout)
+nmap_out_to_html(tcp_enum_scan, output_dir_nmap_enum, outfile_name+".html")
+write_outfile(output_dir_nmap_xml, outfile_name+".xml", tcp_enum_scan.stdout)
 
 hosts = nmap_parse_ports_by_host(scan_output)
 ports = nmap_parse_hosts_by_port(scan_output)
@@ -138,8 +149,8 @@ scan_options = config.get("scan_config", "udp_enum")
 udp_enum_scan = run_nmap_scan(target, scan_options)
 scan_output = udp_enum_scan.stdout
 outfile_name = "nmap_udp_enum_scan_"+timestamp
-nmap_out_to_html(udp_enum_scan, os.path.join(output_dir, "enum_scans"), outfile_name+".html")
-write_outfile(os.path.join(output_dir,"nmap_xml"), outfile_name+".xml", udp_enum_scan.stdout)
+nmap_out_to_html(udp_enum_scan, output_dir_nmap_enum, outfile_name+".html")
+write_outfile(output_dir_nmap_xml, outfile_name+".xml", udp_enum_scan.stdout)
 
 hosts.update(nmap_parse_ports_by_host(scan_output))
 ports.update(nmap_parse_hosts_by_port(scan_output))
@@ -148,8 +159,8 @@ logging.debug(hosts)
 logging.debug(ports)
 logging.debug(webhosts)
 
-write_target_lists_by_port(ports, os.path.join(output_dir,"target_lists"))
-write_outfile(os.path.join(output_dir,"target_lists"), "all_webhosts.txt", webhosts)
+write_target_lists_by_port(ports, output_dir_target_lists)
+write_outfile(output_dir_target_lists, "all_webhosts.txt", webhosts)
 
 
 #------------------------------------------------------------------------------
@@ -201,8 +212,8 @@ for section in config.sections():
             script_scan = run_nmap_scan(target_list, scan_options)
             
             outfile_name = section+"_"+timestamp
-            nmap_out_to_html(script_scan, os.path.join(output_dir,"services"), outfile_name+".html")
-            write_outfile(os.path.join(output_dir,"nmap_xml"), outfile_name+".xml", script_scan.stdout)
+            nmap_out_to_html(script_scan, output_dir_service_info, outfile_name+".html")
+            write_outfile(output_dir_nmap_xml, outfile_name+".xml", script_scan.stdout)
             
         else:
             print "No "+section+" services found during enumeration scan...skipping...\n"
@@ -216,7 +227,7 @@ if webhosts:
     if "n" in run_nikto_scan or "N" in run_nikto_scan:
         pass
     else:
-        path = os.path.join(output_dir, "services")
+        path = output_dir_service_info
         if not os.path.exists(path):
             os.makedirs(path)
         try:
@@ -234,11 +245,11 @@ if webhosts:
 # Wrap it all up
 
 #Write html index of all output files
-write_html_index(output_dir)
+write_html_index(output_dir, config)
 
 #If output directory has old scans in it, merge target lists to prevent duplicates
 if is_output_dir_clean == False:
-    list_dir = os.path.join(output_dir, "target_lists")
+    list_dir = output_dir_target_lists
     for fname in os.listdir(list_dir):
         output_text = ""
         fpath = os.path.join(list_dir, fname)

@@ -1,5 +1,10 @@
 [main_config]
-#TODO
+# Subdirectories of main output directory (specified in command line)
+output_dir_info = info
+output_dir_nmap_xml = nmap_xml
+output_dir_nmap_enum = enum_scans
+output_dir_service_info = services
+output_dir_target_lists = target_lists
 
 [scan_config]
 #Nmap scan parameters for live host identification and service enumeration

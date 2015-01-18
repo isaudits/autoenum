@@ -54,23 +54,37 @@ def write_target_list(hosts, output_dir):
     
     write_outfile(output_dir, filename, output_text)
     
-def write_html_index(output_folder):
+def write_html_index(output_dir, config):
     '''
     write out an html index page containing links to all of the text files that are
     in the output directory
+    
+    Accepts output_dir (string) and config (ConfigParser object) from main script
+    
+    NOTE - output directory variables in main module are full paths, while these
+            are folder names only; This is to allow building of relative href
+            links in HTML output
+    
     '''
-    if os.path.exists(os.path.join(output_folder,"index.html")):
-        os.remove(os.path.join(output_folder,"index.html"))
+    
+    output_dir_info = config.get("main_config", "output_dir_info")
+    output_dir_nmap_enum = config.get("main_config", "output_dir_nmap_enum")
+    output_dir_service_info = config.get("main_config", "output_dir_service_info")
+    output_dir_target_lists = config.get("main_config", "output_dir_target_lists")
+    
+    
+    if os.path.exists(os.path.join(output_dir,"index.html")):
+        os.remove(os.path.join(output_dir,"index.html"))
     html_title = "Autoenum scan output"
     html_body = "<h1>"+html_title+"</h1>\n"
     
     #-----------------------------------------------------------
-    # Output ession history table
+    # Output session history table
     
     html_body += "<h2>Session history</h2>\n"
     html_body += "<table>\n"
     
-    history_file = csv.reader(open(os.path.join(output_folder, "info", "scan_history.csv"), 'rb'))
+    history_file = csv.reader(open(os.path.join(output_dir, output_dir_info, "scan_history.csv"), 'rb'))
     
     headers = history_file.next()
     html_body += "    <tr>\n"
@@ -86,13 +100,13 @@ def write_html_index(output_folder):
     html_body += "</table>\n"
     
     #-----------------------------------------------------------
-    # Output hoyperlinks to Nmap enumeration scan reports
+    # Output hyperlinks to Nmap enumeration scan reports
     
     html_body += "<h2>Enumeration results</h2>\n"
     
     try:
-        directory = "enum_scans/"
-        for fname in os.listdir(os.path.join(output_folder,directory)):
+        directory = output_dir_nmap_enum +"/"
+        for fname in os.listdir(os.path.join(output_dir,directory)):
             html_body += " <a href='" + directory + fname + "'>" + fname + "</a><br>\n"
     except:
         pass
@@ -106,8 +120,8 @@ def write_html_index(output_folder):
     html_body += "<h2>Service scan results</h2>\n"
     
     try:
-        directory = "services/"
-        for fname in os.listdir(os.path.join(output_folder,directory)):
+        directory = output_dir_service_info + "/"
+        for fname in os.listdir(os.path.join(output_dir,directory)):
             html_body += " <a href='" + directory + fname + "'>" + fname + "</a><br>\n"
     except:
         pass
@@ -120,8 +134,8 @@ def write_html_index(output_folder):
     html_body += "<h2>Target Listings</h2>\n"
     
     try:
-        directory = "target_lists/"
-        for fname in os.listdir(os.path.join(output_folder,directory)):
+        directory = output_dir_target_lists + "/"
+        for fname in os.listdir(os.path.join(output_dir,directory)):
             html_body += " <a href='" + directory + fname + "'>" + fname + "</a><br>\n"
     except:
         pass 
@@ -137,7 +151,7 @@ def write_html_index(output_folder):
     html_out = input_file.read()
     html_out = html_out.replace("<!--title-->",html_title)
     html_out = html_out.replace("<!--body-->",html_body)
-    write_outfile(output_folder, "index.html", html_out)
+    write_outfile(output_dir, "index.html", html_out)
 
 if __name__ == '__main__':
     #self test code goes here!!!

@@ -14,7 +14,6 @@ import os
 import csv
 
 def write_outfile(path, filename, output_text):
-    #path variable should be passed as relative path to working directory
     
     if not os.path.exists(path):
         os.makedirs(path)
@@ -56,7 +55,7 @@ def write_target_list(hosts, output_dir):
     
 def write_html_index(output_dir, config):
     '''
-    write out an html index page containing links to all of the text files that are
+    write out an html index page containing links to all of the various files that are
     in the output directory
     
     Accepts output_dir (string) and config (ConfigParser object) from main script

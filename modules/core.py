@@ -13,7 +13,6 @@ import sys
 import os
 import shutil
 import subprocess
-import csv
 
 # exit routine
 def exit_program():

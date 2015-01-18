@@ -13,10 +13,11 @@ See README.md for licensing information and credits
 import time
 import datetime
 import logging
+import os
+import subprocess
 from libnmap.process import NmapProcess
 from libnmap.parser import NmapParser, NmapParserException
 #from libnmap.objects import NmapReport
-from core import *
 
 def run_nmap_scan(scan_targets, scan_options):
     '''

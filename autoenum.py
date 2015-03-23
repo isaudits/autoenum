@@ -127,7 +127,7 @@ else:
     live_hosts = modules.nmap.nmap_parse_live_hosts(live_host_scan.stdout)
     logging.debug(live_hosts)
 
-    modules.outputwrite_target_list(live_hosts, os.path.join(output_dir,"target_lists"))
+    modules.output.write_target_list(live_hosts, os.path.join(output_dir,"target_lists"))
     target = live_hosts
 
 #------------------------------------------------------------------------------

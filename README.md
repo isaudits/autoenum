@@ -48,7 +48,6 @@ Script tested on Kali Linux as well as OSX and should function on UNIX-based sys
 - Optional detection and exclusion of fragile devices such as printers
 - Windows - find / remove OS dependencies
     - Nmap scan xml parsing via xsltproc (to Python)
-- Catch keyboard interrupts and exit subprocesses without killing entire script
 
 ---------------------------------------------------------------------------------------------------
 

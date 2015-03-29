@@ -90,15 +90,17 @@ def nmap_parse_ports_by_host(scan_output):
         e.g. {'192.168.0.171': [(80, 'tcp'), (111, 'tcp')]}
     
     '''
-    
-    hosts={}
-    parsed = NmapParser.parse(scan_output)
-    
-    for host in parsed.hosts:
-        if host.is_up():
-            hosts[host.address] =  host.get_open_ports()
-    
-    return hosts
+    try:
+        hosts={}
+        parsed = NmapParser.parse(scan_output)
+        
+        for host in parsed.hosts:
+            if host.is_up():
+                hosts[host.address] =  host.get_open_ports()
+        
+        return hosts
+    except:
+        print "\n[!] Error parsing scan output"
         
 def nmap_parse_hosts_by_port(scan_output):
     '''Accepts nmap scan output XML and returns a dict of open ports and lists of the corresponding
@@ -106,19 +108,22 @@ def nmap_parse_hosts_by_port(scan_output):
         
         e.g. {(80, 'tcp'): ['192.168.0.171'], (111, 'tcp'): ['192.168.0.169', '192.168.0.171']} 
     '''
-    parsed = NmapParser.parse(scan_output)
-    
-    hosts={}    #e.g. {'192.168.0.171': [(80, 'tcp'), (111, 'tcp')]}
-    ports={}    #e.g. {(80, 'tcp'): ['192.168.0.171'], (111, 'tcp'): ['192.168.0.169', '192.168.0.171']}
-    
-    for host in parsed.hosts:
-        if host.is_up():
-            host_ports =  host.get_open_ports()
-            hosts[host.address] = host_ports
-            for port in host_ports:
-                ports.setdefault(port,[]).append(host.address)
-    
-    return ports
+    try:
+        parsed = NmapParser.parse(scan_output)
+        
+        hosts={}    #e.g. {'192.168.0.171': [(80, 'tcp'), (111, 'tcp')]}
+        ports={}    #e.g. {(80, 'tcp'): ['192.168.0.171'], (111, 'tcp'): ['192.168.0.169', '192.168.0.171']}
+        
+        for host in parsed.hosts:
+            if host.is_up():
+                host_ports =  host.get_open_ports()
+                hosts[host.address] = host_ports
+                for port in host_ports:
+                    ports.setdefault(port,[]).append(host.address)
+        
+        return ports
+    except:
+        print "\n[!] Error parsing scan output"
 
 def nmap_parse_webhosts(scan_output):
     '''Accepts nmap scan output XML and returns text output suitable for passing to Nikto
@@ -127,31 +132,40 @@ def nmap_parse_webhosts(scan_output):
         192.168.1.100:80
         192.168.1.101:8080
     '''
-    webhosts = ""
-    parsed = NmapParser.parse(scan_output)
     
-    for host in parsed.hosts:
-        if host.is_up():
-            services = host.services
-            for service in services:
-                if (service.state == "open") and (service.service[:4]) == "http":
-                    webhosts += host.address+":"+str(service.port)+"\n"
+    try:
+        webhosts = ""
+        parsed = NmapParser.parse(scan_output)
+        
+        for host in parsed.hosts:
+            if host.is_up():
+                services = host.services
+                for service in services:
+                    if (service.state == "open") and (service.service[:4]) == "http":
+                        webhosts += host.address+":"+str(service.port)+"\n"
+        
+        return webhosts
     
-    return webhosts
-
+    except:
+        print "\n[!] Error parsing scan output"
+        
 def nmap_parse_live_hosts(scan_output):
     '''Accepts nmap scan output XML and returns a list of all live hosts
 
     '''
-    live_hosts = []
-    parsed = NmapParser.parse(scan_output)
     
-    for host in parsed.hosts:
-        if host.is_up():
-            logging.debug ("live host detected - " + host.address)
-            live_hosts.append(host.address)
-    
-    return live_hosts
+    try:
+        live_hosts = []
+        parsed = NmapParser.parse(scan_output)
+        
+        for host in parsed.hosts:
+            if host.is_up():
+                logging.debug ("live host detected - " + host.address)
+                live_hosts.append(host.address)
+        
+        return live_hosts
+    except:
+        print "\n[!] Error parsing scan output"
                 
     
 if __name__ == '__main__':

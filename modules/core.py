@@ -47,8 +47,6 @@ def execute(command, suppress_stdout=False):
     
     By default, shell command output is also displayed in standard out, which can be suppressed
     with the boolean suppress_stdout
-    
-    TODO - catch keyboard interrupts and kill subprocesses so we can exit gracefully!
     '''
     
     output = ""
@@ -67,9 +65,15 @@ def execute(command, suppress_stdout=False):
         
         return output
 
+    except KeyboardInterrupt:
+        print "\n[!] Keyboard Interrupt - command '%s' killed..." % command
+        print "[!] Continuing script execution..."
+        return ""
+
     except Exception as exception:
-        print '   [!] Error running command %s' % command
-        print '   [!] Exception: %s' % exception
+        print "\n[!] Error running command '%s'" % command
+        print "[!] Exception: %s" % exception
+        return ""
 
 if __name__ == '__main__':
     #self test code goes here!!!

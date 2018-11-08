@@ -12,7 +12,7 @@ Enumeration scan automation script:
 - Optionally launches a Nikto scan on all detected web hosts and includes results in output directory
 
 ---------------------------------------------------------------------------------------------------
-##Notes
+## Notes
 
 All scan parameters are pulled from config files so multiple configurations can be developed for
 internal vs. external networks or loud vs. quiet and specified with the -c flag.
@@ -24,9 +24,9 @@ due to the way the python-libnmap parses targets with commas as tuples (thus sep
 Script tested on Kali Linux as well as OSX and should function on UNIX-based systems with required dependencies.
 
 ---------------------------------------------------------------------------------------------------
-##Dependencies
+## Dependencies
 
-###Python Module Dependencies:
+### Python Module Dependencies:
 - python-libnmap (not installed on Kali Linux by default)
     - <https://github.com/savon-noir/python-libnmap>
     - <https://libnmap.readthedocs.org/en/latest/>
@@ -34,12 +34,12 @@ Script tested on Kali Linux as well as OSX and should function on UNIX-based sys
 `pip install python-libnmap`
 
 
-###Binary Dependencies (all installed on Kali Linux by default):
+### Binary Dependencies (all installed on Kali Linux by default):
 - Nmap
 - Nikto (optional)
 
 ---------------------------------------------------------------------------------------------------
-##Todo
+## Todo
 
 - Move additional hard-coded stuff to config file
 - Additional external service scan utilities like we have with Nikto

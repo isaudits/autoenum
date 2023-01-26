@@ -3,3 +3,4 @@
 *.pyc
 /output/*
 /config/*.cfg
+.venv

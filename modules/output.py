@@ -1,8 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 '''
 @author: Matthew C. Jones, CPA, CISA, OSCP
-IS Audits & Consulting, LLC
-TJS Deemer Dana LLP
+Symphona LLP
 
 Output functions for autoenum
 
@@ -33,7 +32,7 @@ def write_target_lists_by_port(ports, output_dir):
     e.g. {(80, 'tcp'): ['192.168.0.171'], (111, 'tcp'): ['192.168.0.169', '192.168.0.171']}
     
     '''
-    for port,array in ports.iteritems():
+    for port,array in ports.items():
         output_text = ""
         filename = port[1]+"_"+str(port[0])+'.txt'
         for host in array:
@@ -58,7 +57,7 @@ def write_html_index(output_dir, config):
     write out an html index page containing links to all of the various files that are
     in the output directory
     
-    Accepts output_dir (string) and config (ConfigParser object) from main script
+    Accepts output_dir (string) and config (configparser object) from main script
     
     NOTE - output directory variables in main module are full paths, while these
             are folder names only; This is to allow building of relative href
@@ -83,9 +82,9 @@ def write_html_index(output_dir, config):
     html_body += "<h2>Session history</h2>\n"
     html_body += "<table>\n"
     
-    history_file = csv.reader(open(os.path.join(output_dir, output_dir_info, "scan_history.csv"), 'rb'))
+    history_file = csv.reader(open(os.path.join(output_dir, output_dir_info, "scan_history.csv"), 'r'))
     
-    headers = history_file.next()
+    headers = next(history_file)
     html_body += "    <tr>\n"
     for header in headers:
         html_body += "        <th>" + header + "</th>\n"

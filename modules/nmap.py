@@ -1,8 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 '''
 @author: Matthew C. Jones, CPA, CISA, OSCP
-IS Audits & Consulting, LLC
-TJS Deemer Dana LLP
+Symphona LLP
 
 Nmap scanning functions for autoenum
 
@@ -43,14 +42,14 @@ def run_nmap_scan(scan_targets, scan_options):
         scan_options = scan_options.replace("-O", "")
     
     nmap_proc = NmapProcess(targets=scan_targets, options=scan_options)
-    print "Running scan command:\n"+nmap_proc.command
+    print("Running scan command:\n"+nmap_proc.command)
     nmap_proc.run_background()
     
     while nmap_proc.is_running():
         try:
             time.sleep(status_update_interval)
             
-            if nmap_proc.progress > 0:
+            if float(nmap_proc.progress) > 0:
                 
                 #Nmap only updates ETC periodically and will sometimes return a result that is behind current system time
                 etctime = datetime.datetime.fromtimestamp(int(nmap_proc.etc))
@@ -60,13 +59,13 @@ def run_nmap_scan(scan_targets, scan_options):
                 timeleft = etctime - systime
                 print("{0} Timing: About {1}% done; ETC: {2} ({3} remaining)".format(nmap_proc.current_task.name, nmap_proc.progress, etctime, timeleft))
         except KeyboardInterrupt:
-            print "Keyboard Interrupt - Killing Current Nmap Scan!"
+            print("Keyboard Interrupt - Killing Current Nmap Scan!")
             nmap_proc.stop()
         
     if nmap_proc.rc == 0:
-        print nmap_proc.summary + "\n"
+        print(nmap_proc.summary + "\n")
     else:
-        print nmap_proc.stderr + "\n"
+        print(nmap_proc.stderr + "\n")
     
     return nmap_proc
 
@@ -100,7 +99,7 @@ def nmap_parse_ports_by_host(scan_output):
         
         return hosts
     except:
-        print "\n[!] Error parsing scan output"
+        print("\n[!] Error parsing scan output")
         
 def nmap_parse_hosts_by_port(scan_output):
     '''Accepts nmap scan output XML and returns a dict of open ports and lists of the corresponding
@@ -123,7 +122,7 @@ def nmap_parse_hosts_by_port(scan_output):
         
         return ports
     except:
-        print "\n[!] Error parsing scan output"
+        print("\n[!] Error parsing scan output")
 
 def nmap_parse_webhosts(scan_output):
     '''Accepts nmap scan output XML and returns text output suitable for passing to Nikto
@@ -147,7 +146,7 @@ def nmap_parse_webhosts(scan_output):
         return webhosts
     
     except:
-        print "\n[!] Error parsing scan output"
+        print("\n[!] Error parsing scan output")
         
 def nmap_parse_live_hosts(scan_output):
     '''Accepts nmap scan output XML and returns a list of all live hosts
@@ -165,7 +164,7 @@ def nmap_parse_live_hosts(scan_output):
         
         return live_hosts
     except:
-        print "\n[!] Error parsing scan output"
+        print("\n[!] Error parsing scan output")
                 
     
 if __name__ == '__main__':
@@ -176,6 +175,6 @@ if __name__ == '__main__':
     hosts = nmap_parse_ports_by_host(scan_output)
     ports = nmap_parse_hosts_by_port(scan_output)
     webhosts = nmap_parse_webhosts(scan_output)
-    print "Host array\n"+str(hosts)
-    print "\nPort array \n"+str(ports)
-    print "\nWebhosts \n"+ webhosts
+    print("Host array\n"+str(hosts))
+    print("\nPort array \n"+str(ports))
+    print("\nWebhosts \n"+ webhosts)

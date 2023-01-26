@@ -1,8 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 '''
 @author: Matthew C. Jones, CPA, CISA, OSCP
-IS Audits & Consulting, LLC
-TJS Deemer Dana LLP
+Symphona LLP
 
 Core functions for autoenum
 
@@ -16,7 +15,7 @@ import subprocess
 
 # exit routine
 def exit_program():
-    print "\n\nQuitting...\n"
+    print("\n\nQuitting...\n")
     sys.exit()
     
 # cleanup old or stale files
@@ -25,7 +24,7 @@ def cleanup_routine(output_dir):
     
     try:
         if not os.listdir(output_dir) == []:
-            response = raw_input("\nOutput directory is not empty - delete existing contents? (enter no if you want to append data to existing output files)? [no] ")
+            response = input("\nOutput directory is not empty - delete existing contents? (enter no if you want to append data to existing output files)? [no] ")
             if "y" in response or "Y" in response:
                 print("Deleting old output files...\n")
                 shutil.rmtree(output_dir, True)
@@ -38,7 +37,7 @@ def check_config(config_file):
     if os.path.exists(config_file):
         pass
     else:
-        print "Specified config file not found. Copying example config file..."
+        print("Specified config file not found. Copying example config file...")
         shutil.copyfile("config/default.example", config_file)
 
 def execute(command, suppress_stdout=False):
@@ -66,13 +65,13 @@ def execute(command, suppress_stdout=False):
         return output
 
     except KeyboardInterrupt:
-        print "\n[!] Keyboard Interrupt - command '%s' killed..." % command
-        print "[!] Continuing script execution..."
+        print("\n[!] Keyboard Interrupt - command '%s' killed..." % command)
+        print("[!] Continuing script execution...")
         return ""
 
     except Exception as exception:
-        print "\n[!] Error running command '%s'" % command
-        print "[!] Exception: %s" % exception
+        print("\n[!] Error running command '%s'" % command)
+        print("[!] Exception: %s" % exception)
         return ""
 
 if __name__ == '__main__':

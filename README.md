@@ -55,9 +55,7 @@ Copyright 2014
 
 Matthew C. Jones, CPA, CISA, OSCP
 
-IS Audits & Consulting, LLC - <http://www.isaudits.com/>
-
-TJS Deemer Dana LLP - <http://www.tjsdd.com/>
+Symphona LLP - <https://www.symphona.us/>
 
 Concept based upon functionality observed in the LAN portion of the Kali Discover script by leebaird: <https://github.com/leebaird/discover/>
 

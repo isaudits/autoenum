@@ -1,15 +1,14 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 '''
 @author: Matthew C. Jones, CPA, CISA, OSCP
-IS Audits & Consulting, LLC
-TJS Deemer Dana LLP
+Symphona LLP
 
 Enumeration and script scanning automation script
 
 See README.md for licensing information and credits
 
 '''
-import ConfigParser
+import configparser
 import argparse
 import logging
 import time
@@ -64,7 +63,7 @@ logging.debug('Debug mode enabled')
 # Get general config file parameters
 #------------------------------------------------------------------------------
 modules.core.check_config(config_file)
-config = ConfigParser.SafeConfigParser()
+config = configparser.ConfigParser()
 config.read(config_file)
 
 try:
@@ -74,7 +73,7 @@ try:
     output_dir_service_info = os.path.join(output_dir, config.get("main_config", "output_dir_service_info"))
     output_dir_target_lists = os.path.join(output_dir, config.get("main_config", "output_dir_target_lists"))
 except:
-    print "Missing required config file sections. Check running config file against provided example\n"
+    print("Missing required config file sections. Check running config file against provided example\n")
     modules.core.exit_program()
     
 #------------------------------------------------------------------------------
@@ -86,13 +85,13 @@ time.sleep(1)
 
 #Check target input
 if "," in target:
-    print "Commas found in input target list and will not parse correctly in libnmap"
+    print("Commas found in input target list and will not parse correctly in libnmap")
     modules.core.exit_program()
 
 #Check root
 if os.getuid()!=0:
-    print ("Script not running as root...this breaks stuff with nmap...")
-    response = raw_input("Are you sure you wish to continue?!? [no]")
+    print("Script not running as root...this breaks stuff with nmap...")
+    response = input("Are you sure you wish to continue?!? [no]")
     if "y" in response or "Y" in response:
         pass
     else:
@@ -118,7 +117,7 @@ if os.getuid()!=0:
     logging.warn("Script not running as root which prevents proper live host detection...")
     logging.warn("We will continue and scan all targets, but you should really re-run as root!")
 else:
-    print "Scanning for live hosts in specified target range..."
+    print("Scanning for live hosts in specified target range...")
     scan_options = config.get("scan_config", "live_hosts")
     live_host_scan = modules.nmap.run_nmap_scan(target, scan_options)
     
@@ -135,7 +134,7 @@ else:
 #------------------------------------------------------------------------------
 # Service enumeration scan
 
-print "Performing initial enumeration scan on live hosts..."
+print("Performing initial enumeration scan on live hosts...")
 
 scan_options = config.get("scan_config", "tcp_enum")
 tcp_enum_scan = modules.nmap.run_nmap_scan(target, scan_options)
@@ -192,7 +191,7 @@ for section in config.sections():
 
             #Loop through the port dictionary and look for each port from the service scan config. If
             #present, then add all hosts associated to the target list for this service scan
-            for key,value in ports.iteritems():
+            for key,value in ports.items():
                 if config_port in key:
                     for host in ports[key]:
                         logging.debug(host)
@@ -202,7 +201,7 @@ for section in config.sections():
         
         if target_list:
             #Target list is not empty - proceed with script scan
-            print "Script scanning from config file section " + section + "...\n"        
+            print("Script scanning from config file section " + section + "...\n")
                     
             
             if config_scan_args:
@@ -219,14 +218,14 @@ for section in config.sections():
             modules.output.write_outfile(output_dir_nmap_xml, outfile_name+".xml", script_scan.stdout)
             
         else:
-            print "No "+section+" services found during enumeration scan...skipping...\n"
+            print("No "+section+" services found during enumeration scan...skipping...\n")
 
 
 #------------------------------------------------------------------------------
 # Other scans
 
 if webhosts:
-    run_nikto_scan = raw_input("\nWebhosts detected - run Nikto scan? [yes] ")
+    run_nikto_scan =input("\nWebhosts detected - run Nikto scan? [yes] ")
     if "n" in run_nikto_scan or "N" in run_nikto_scan:
         pass
     else:
@@ -239,9 +238,9 @@ if webhosts:
             p1.stdout.close() #make sure we close the output so p2 doesn't hang waiting for more input
             output = p2.communicate()[0] #run our commands
         except KeyboardInterrupt:
-            print "Keyboard Interrupt - Nikto Scan Operation Killed"
+            print("Keyboard Interrupt - Nikto Scan Operation Killed")
         except:
-            print "Nikto could not be executed - ensure it is installed and in your path"
+            print("Nikto could not be executed - ensure it is installed and in your path")
 
 
 #------------------------------------------------------------------------------
@@ -264,4 +263,4 @@ if is_output_dir_clean == False:
         modules.output.write_outfile(list_dir, fname, output_text)
 
 #This is the end...beautiful friend...the end...
-print "\nOutput files located at " + output_dir + " with timestamp " + timestamp
+print("\nOutput files located at " + output_dir + " with timestamp " + timestamp)

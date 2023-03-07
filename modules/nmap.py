@@ -16,6 +16,7 @@ import os
 import subprocess
 from libnmap.process import NmapProcess
 from libnmap.parser import NmapParser, NmapParserException
+from modules.output import write_outfile
 #from libnmap.objects import NmapReport
 
 def run_nmap_scan(scan_targets, scan_options):
@@ -77,10 +78,11 @@ def nmap_out_to_html(scan_object, output_dir, filename):
     TODO - find a more pythonic way to do this instead of relying on xsltproc!
     '''
     
-    p1 = subprocess.Popen(['echo', scan_object.stdout], stdout=subprocess.PIPE) #Set up the echo command and direct the output to a pipe
-    p2 = subprocess.Popen(['xsltproc', '-o' , os.path.join(output_dir,filename), "-"], stdin=p1.stdout) #send p1's output to p2
-    p1.stdout.close() #make sure we close the output so p2 doesn't hang waiting for more input
-    output = p2.communicate()[0] #run our commands
+    write_outfile(output_dir, 'temp.xml', scan_object.stdout)
+    process = subprocess.Popen(['xsltproc', '-o' , os.path.join(output_dir,filename), os.path.join(output_dir, 'temp.xml')])
+    output = process.communicate()[0] #run our commands
+    os.remove(os.path.join(output_dir,'temp.xml'))
+    
 
 def nmap_parse_ports_by_host(scan_output):
     '''Accepts nmap scan output XML and returns a dict of hosts and tuples of corresponding

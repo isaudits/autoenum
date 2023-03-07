@@ -40,6 +40,10 @@ parser.add_argument('-o','--output',
                     help='Output directory (overrides default relative path: "output")',
                     action='store', default='output'
 )
+parser.add_argument('-q','--quiet',
+                    help='Quiet scan (no service scans, nikto, etc)',
+                    action='store_true'
+)
 parser.add_argument('-d','--debug',
                     help='Print lots of debugging statements',
                     action="store_const",dest="loglevel",const=logging.DEBUG,
@@ -54,6 +58,7 @@ args = parser.parse_args()
 target = args.target
 config_file = args.config
 output_dir = args.output
+quiet = args.quiet
 
 logging.basicConfig(level=args.loglevel)
 logging.info('verbose mode enabled')
@@ -164,83 +169,83 @@ logging.debug(webhosts)
 modules.output.write_target_lists_by_port(ports, output_dir_target_lists)
 modules.output.write_outfile(output_dir_target_lists, "all_webhosts.txt", webhosts)
 
+if not quiet:
+    #------------------------------------------------------------------------------
+    # Nmap script scans
 
-#------------------------------------------------------------------------------
-# Nmap script scans
-
-#Loop through script scan config file sections and perform script scans
-for section in config.sections():
-    #skip over to the script scan sections
-    if section == "scan_config" or section == "main_config":
-        pass
-    else:
-        scan_options = config.get("scan_config","script")
-        config_ports = config.get(section, "ports")
-        config_scripts = config.get(section, "scripts")
-        if config.has_option(section, "scan_args"):
-            config_scan_args = config.get(section, "scan_args")
-        else: config_scan_args = ""
-        if config.has_option(section, "script_args"):
-            config_script_args = config.get(section, "script_args")
-        else: config_script_args = ""
-    
-        target_list = []
-        
-        for config_port in map(int,config_ports.split(",")):    #convert ports from to int using map function
-            logging.debug(config_port)
-
-            #Loop through the port dictionary and look for each port from the service scan config. If
-            #present, then add all hosts associated to the target list for this service scan
-            for key,value in ports.items():
-                if config_port in key:
-                    for host in ports[key]:
-                        logging.debug(host)
-                        target_list.append(host)
-        target_list = list(set(target_list))                    #convert list to set and back to remove duplicates
-        logging.debug(target_list)
-        
-        if target_list:
-            #Target list is not empty - proceed with script scan
-            print("Script scanning from config file section " + section + "...\n")
-                    
-            
-            if config_scan_args:
-                scan_options += " " + config_scan_args
-            scan_options += " -p"+config_ports
-            scan_options += " --script "+config_scripts
-            if config_script_args:
-                scan_options += " --script-args "+config_script_args
-            
-            script_scan = modules.nmap.run_nmap_scan(target_list, scan_options)
-            
-            outfile_name = section+"_"+timestamp
-            modules.nmap.nmap_out_to_html(script_scan, output_dir_service_info, outfile_name+".html")
-            modules.output.write_outfile(output_dir_nmap_xml, outfile_name+".xml", script_scan.stdout)
-            
+    #Loop through script scan config file sections and perform script scans
+    for section in config.sections():
+        #skip over to the script scan sections
+        if section == "scan_config" or section == "main_config":
+            pass
         else:
-            print("No "+section+" services found during enumeration scan...skipping...\n")
+            scan_options = config.get("scan_config","script")
+            config_ports = config.get(section, "ports")
+            config_scripts = config.get(section, "scripts")
+            if config.has_option(section, "scan_args"):
+                config_scan_args = config.get(section, "scan_args")
+            else: config_scan_args = ""
+            if config.has_option(section, "script_args"):
+                config_script_args = config.get(section, "script_args")
+            else: config_script_args = ""
+        
+            target_list = []
+            
+            for config_port in map(int,config_ports.split(",")):    #convert ports from to int using map function
+                logging.debug(config_port)
+
+                #Loop through the port dictionary and look for each port from the service scan config. If
+                #present, then add all hosts associated to the target list for this service scan
+                for key,value in ports.items():
+                    if config_port in key:
+                        for host in ports[key]:
+                            logging.debug(host)
+                            target_list.append(host)
+            target_list = list(set(target_list))                    #convert list to set and back to remove duplicates
+            logging.debug(target_list)
+            
+            if target_list:
+                #Target list is not empty - proceed with script scan
+                print("Script scanning from config file section " + section + "...\n")
+                        
+                
+                if config_scan_args:
+                    scan_options += " " + config_scan_args
+                scan_options += " -p"+config_ports
+                scan_options += " --script "+config_scripts
+                if config_script_args:
+                    scan_options += " --script-args "+config_script_args
+                
+                script_scan = modules.nmap.run_nmap_scan(target_list, scan_options)
+                
+                outfile_name = section+"_"+timestamp
+                modules.nmap.nmap_out_to_html(script_scan, output_dir_service_info, outfile_name+".html")
+                modules.output.write_outfile(output_dir_nmap_xml, outfile_name+".xml", script_scan.stdout)
+                
+            else:
+                print("No "+section+" services found during enumeration scan...skipping...\n")
 
 
-#------------------------------------------------------------------------------
-# Other scans
+    #------------------------------------------------------------------------------
+    # Other scans
 
-if webhosts:
-    run_nikto_scan =input("\nWebhosts detected - run Nikto scan? [yes] ")
-    if "n" in run_nikto_scan or "N" in run_nikto_scan:
-        pass
-    else:
-        path = output_dir_service_info
-        if not os.path.exists(path):
-            os.makedirs(path)
-        try:
-            p1 = subprocess.Popen(['echo', webhosts], stdout=subprocess.PIPE) #Set up the echo command and direct the output to a pipe
-            p2 = subprocess.Popen(['nikto','-h', '-', '-o' , os.path.join(path, "http-nikto_"+timestamp+".html")], stdin=p1.stdout) #send p1's output to p2
-            p1.stdout.close() #make sure we close the output so p2 doesn't hang waiting for more input
-            output = p2.communicate()[0] #run our commands
-        except KeyboardInterrupt:
-            print("Keyboard Interrupt - Nikto Scan Operation Killed")
-        except:
-            print("Nikto could not be executed - ensure it is installed and in your path")
+    if webhosts:
+        run_nikto_scan =input("\nWebhosts detected - run Nikto scan? [yes] ")
+        if "n" in run_nikto_scan or "N" in run_nikto_scan:
+            pass
+        else:
+            path = output_dir_service_info
+            if not os.path.exists(path):
+                os.makedirs(path)
+            try:
+                p1 = subprocess.Popen(['echo', webhosts], stdout=subprocess.PIPE) #Set up the echo command and direct the output to a pipe
+                p2 = subprocess.Popen(['nikto','-h', '-', '-o' , os.path.join(path, "http-nikto_"+timestamp+".html")], stdin=p1.stdout) #send p1's output to p2
+                p1.stdout.close() #make sure we close the output so p2 doesn't hang waiting for more input
+                output = p2.communicate()[0] #run our commands
+            except KeyboardInterrupt:
+                print("Keyboard Interrupt - Nikto Scan Operation Killed")
+            except:
+                print("Nikto could not be executed - ensure it is installed and in your path")
 
 
 #------------------------------------------------------------------------------
